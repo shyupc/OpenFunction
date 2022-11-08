@@ -43,8 +43,8 @@ import (
 	"github.com/openfunction/pkg/util"
 )
 
-const (
-	triggerHandlerImage = "openfunctiondev/trigger-handler:v2"
+var (
+	triggerHandlerImage = util.GetEnvOrDefault("TRIGGER_HANDLER_IMAGE", "openfunctiondev/trigger-handler:v2")
 )
 
 // TriggerReconciler reconciles a Trigger object

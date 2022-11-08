@@ -333,7 +333,7 @@ func (r *FunctionReconciler) createServing(fn *openfunction.Function) error {
 
 	serving := &openfunction.Serving{
 		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: "serving-",
+			GenerateName: fmt.Sprintf("%s-x-", fn.Name),
 			Namespace:    fn.Namespace,
 			Labels: map[string]string{
 				constants.FunctionLabel: fn.Name,

@@ -41,8 +41,8 @@ import (
 	"github.com/openfunction/pkg/util"
 )
 
-const (
-	eventSourceHandlerImage = "openfunctiondev/eventsource-handler:v2"
+var (
+	eventSourceHandlerImage = util.GetEnvOrDefault("EVENT_SOURCE_HANDLER_IMAGE", "openfunctiondev/eventsource-handler:v2")
 )
 
 // EventSourceReconciler reconciles a EventSource object
