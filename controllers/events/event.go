@@ -6,8 +6,13 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/openfunction/pkg/util"
+
+	"github.com/openfunction/pkg/core"
+
 	componentsv1alpha1 "github.com/dapr/dapr/pkg/apis/components/v1alpha1"
 	"github.com/go-logr/logr"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
@@ -254,5 +259,23 @@ func InitFunction(image string) *ofcore.Function {
 		},
 		Keda: &ofcore.Keda{},
 	}
+	// add Toleration
+	podSpec := corev1.PodSpec{
+		Tolerations: []corev1.Toleration{},
+		Containers: []corev1.Container{
+			{
+				Name:            core.FunctionContainer,
+				ImagePullPolicy: corev1.PullAlways,
+			},
+		},
+	}
+	defaultToleration := `[{"effect": "NoSchedule", "key": "cucloud.cn/infra.crd", "operator": "Exists"}]`
+	toleration := util.GetEnvOrDefault("EVENT_FUNCTION_TOLERATION", defaultToleration)
+	ts := make([]corev1.Toleration, 0)
+	err := json.Unmarshal([]byte(toleration), &ts)
+	if err == nil {
+		podSpec.Tolerations = append(podSpec.Tolerations, ts...)
+	}
+	function.Spec.Serving.Template = &podSpec
 	return function
 }
