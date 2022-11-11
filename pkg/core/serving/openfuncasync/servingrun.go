@@ -499,7 +499,9 @@ func (r *servingRun) createComponents(s *openfunction.Serving) error {
 			return err
 		}
 
-		value = fmt.Sprintf("%s%s,", value, component.Name)
+		cname := fmt.Sprintf("%s##%s", name, component.Name)
+		value = fmt.Sprintf("%s%s,", value, cname)
+		//value = fmt.Sprintf("%s%s,", value, component.Name)
 		log.V(1).Info("Component Created", "Component", component.Name)
 	}
 
@@ -621,12 +623,15 @@ func getComponentName(s *openfunction.Serving, name string) string {
 
 	names := strings.Split(s.Status.ResourceRef[componentName], ",")
 	for _, n := range names {
-		tmp := strings.TrimPrefix(n, fmt.Sprintf("%s-component-", s.Name))
-		if index := strings.LastIndex(tmp, "-"); index != -1 {
-			if tmp[:index] == name {
-				return n
-			}
+		if strings.HasPrefix(n, name) {
+			return n[len(name)+2:]
 		}
+		//tmp := strings.TrimPrefix(n, fmt.Sprintf("%s-component-", s.Name))
+		//if index := strings.LastIndex(tmp, "-"); index != -1 {
+		//	if tmp[:index] == name {
+		//		return n
+		//	}
+		//}
 	}
 
 	return name
